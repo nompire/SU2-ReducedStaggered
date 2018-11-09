@@ -1,0 +1,66 @@
+#!/bin/bash
+# This script needs to be run from the testsuite/scalar directory
+
+# Allow user to specify particular target
+if [ $# -gt 0 ]; then
+  target=$1
+
+  # Compile
+  cd ../../RHMC/
+  echo "Compiling su2_$target..."
+  if ! make -f Make_scalar su2_$target >& /dev/null ; then
+    echo "ERROR: su2_$target compilation failed"
+    make -f Make_scalar su2_$target
+    exit
+  fi
+
+  # Run
+  cd ../testsuite/
+  rm -f scalar/$target.outh
+  echo "Running su2_$target..."
+  ../RHMC/su2_$target < in.$target > scalar/$target.out
+
+  # Check
+  cd scalar/
+  d="`diff -I'Time' -I'time' -I'seconds' -I'^start' $target.ref $target.out`"
+  if [ -n "$d" ] ; then   # Non-zero string length
+    echo "$target.ref and $target.out differ:"
+    echo "$d"
+  else
+    echo "PASS: su2_$target reproduces reference output"
+  fi
+  exit
+fi
+
+# Otherwise consider all active targets
+# Compile
+cd ../../RHMC/
+for target in hmc meas hmc_meas eig ; do
+  echo "Compiling su2_$target..."
+  if ! make -f Make_scalar su2_$target >& /dev/null ; then
+    echo "ERROR: su2_$target compilation failed"
+    make -f Make_scalar su2_$target
+    exit
+  fi
+done
+
+# Run
+cd ../testsuite/
+for target in hmc meas hmc_meas eig ; do
+  rm -f scalar/$target.out
+  echo "Running su2_$target..."
+  ../RHMC/su2_$target < in.$target > scalar/$target.out
+done
+
+# Check
+cd scalar/
+for target in hmc meas hmc_meas eig ; do
+  d="`diff -I'Time' -I'time' -I'seconds' -I'^start' $target.ref $target.out`"
+  if [ -n "$d" ] ; then   # Non-zero string length
+    echo "$target.ref and $target.out differ:"
+    echo "$d"
+    echo
+  else
+    echo "PASS: su2_$target reproduces reference output"
+  fi
+done

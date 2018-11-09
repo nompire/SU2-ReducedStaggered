@@ -1,0 +1,10 @@
+#!/bin/bash
+if [ $# -gt 0 ]; then
+target=$1
+
+cd ../testsuite/
+rm -f scalar/$target.out
+echo "Running su2_$target..."
+../RHMC/su2_$target < in.$target > scalar/$target.out
+
+fi
