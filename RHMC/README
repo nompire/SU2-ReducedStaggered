@@ -9,7 +9,7 @@ su2_eig for eigenvalue measurements on saved configurations
 su2_phi for evolution without accept/reject step
 
 # Dependences:
-Measurements involving polar-projected matrices (s04_meas and su2_hmc_meas) require LAPACK
+Measurements involving polar-projected matrices (su2_meas and su2_hmc_meas) require LAPACK
 Eigenvalue measurements (su2_eig) require PRIMME and LAPACK -- PRIMME can be obtained from http://www.cs.wm.edu/~andreas/software/
 
 # Defines for compilation:
